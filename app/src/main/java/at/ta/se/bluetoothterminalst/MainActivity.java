@@ -6,16 +6,20 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.Set;
 
 public class MainActivity extends AppCompatActivity {
 
-    // EXTRA string to send on to mainactivity
+    // EXTRA strings
+    public static String EXTRA_DEVICE_NAME = "device_name";
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
+
 
     // Member fields
     private BluetoothAdapter btAdapter;
@@ -35,12 +39,35 @@ public class MainActivity extends AppCompatActivity {
         // Find and set up the ListView for paired devices
         pairedListView = (ListView) findViewById(R.id.listView);
         pairedListView.setAdapter(pairedDevicesArrayAdapter);
+        pairedListView.setOnItemClickListener(btDeviceClickListener);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
 
+        refreshBluetoothDeviceList();
+    }
+
+    private AdapterView.OnItemClickListener btDeviceClickListener = new AdapterView.OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+            String info[] = ((TextView) view).getText().toString().split("\n");
+            String name = info[0];
+            String address = info[1];
+
+            Intent intent = new Intent(MainActivity.this, BTTerminalActivity.class);
+            intent.putExtra(EXTRA_DEVICE_NAME, name);
+            intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            startActivity(intent);
+        }
+    };
+
+    public void btRefreshPressed(View view){
+        refreshBluetoothDeviceList();
+    }
+
+    private void refreshBluetoothDeviceList(){
         //It is best to check BT status at onResume in case something has changed while app was paused etc
         checkBTState();
 
