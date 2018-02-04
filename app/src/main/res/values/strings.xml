@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Bluetooth Terminal ST</string>
+    <string name="buttonRefresh">Refresh</string>
 </resources>
